@@ -1,6 +1,7 @@
 name: Amp Runner
 version: "0.1.0"
 slug: amp_runner
+image: ghcr.io/nclandrei/ha-amp-runner
 description: >-
   Runs an Amp runner on this Home Assistant machine so you can start threads from
   ampcode.com or the Amp iOS/macOS apps and let the agent control Home Assistant.

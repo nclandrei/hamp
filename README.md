@@ -12,14 +12,13 @@ to Home Assistant:
 
 ## Install
 
-1. Push this repository to a Git host Home Assistant can clone anonymously (GitHub works).
-2. In Home Assistant: **Settings → Add-ons → Add-on Store → ⋮ → Repositories**, paste the
-   repository URL, **Add**, then close and refresh the store.
-3. Install **Amp Runner** from the new "HAmp" section. The image is built on the device;
-   on a Home Assistant Green this takes a few minutes.
-4. Create an access token at <https://ampcode.com/settings/security>, paste it into the
+1. In Home Assistant: **Settings → Add-ons → Add-on Store → ⋮ → Repositories**, paste
+   `https://github.com/nclandrei/HAmp`, **Add**, then close and refresh the store.
+2. Install **Amp Runner** from the new "HAmp" section. The Green pulls a pre-built image;
+   it does not compile one locally.
+3. Create an access token at <https://ampcode.com/settings/security>, paste it into the
    add-on's **Configuration → Amp access token**, save, **Start**.
-5. Keep **Start on boot** and **Watchdog** on. The runner is now online whenever the machine is.
+4. Keep **Start on boot** and **Watchdog** on. The runner is now online whenever the machine is.
 
 Then open the Amp app or ampcode.com, start a new thread, and select the runner
 `home-assistant`. See [amp_runner/DOCS.md](amp_runner/DOCS.md) for options and details.
@@ -60,4 +59,5 @@ amp_runner/
     AGENTS.md                    how the agent operates Home Assistant
     bin/ha, bin/ha-ws            REST and WebSocket helpers
   DOCS.md, CHANGELOG.md, translations/en.yaml
+.github/workflows/build.yaml    builds aarch64 and amd64, publishes the multi-arch image
 ```

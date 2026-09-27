@@ -8,13 +8,13 @@ apps, and any thread you start there runs here with full access to Home Assistan
 
 1. Create an access token at <https://ampcode.com/settings/security> (it starts with `sgamp_`).
 2. Open the add-on's **Configuration** tab, paste the token into **Amp access token**, save.
-3. **Start** the add-on. Leave **Start on boot** and **Watchdog** on (both default to on).
+3. **Start** the add-on. Turn on **Start on boot** and **Watchdog** if they aren't already on.
 4. Open ampcode.com or the Amp app, start a new thread, and pick the runner named
    `home-assistant` (or whatever you set as **Runner name**). Two directories are offered:
    the runner's workspace (default, recommended) and `/homeassistant` (the Home Assistant
    config directory).
 
-The first start takes a moment while the image is built on the device.
+The first start downloads the pre-built image; it does not build on the device.
 
 ## What threads can do
 

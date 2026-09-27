@@ -41,6 +41,7 @@ RUN chmod a+x /run.sh /opt/workspace/bin/*
 LABEL \
     io.hass.version="${BUILD_VERSION}" \
     io.hass.type="app" \
-    io.hass.arch="aarch64|amd64"
+    io.hass.arch="aarch64|amd64" \
+    org.opencontainers.image.source="https://github.com/nclandrei/HAmp"
 
 CMD [ "/run.sh" ]
