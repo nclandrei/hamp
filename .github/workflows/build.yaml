@@ -20,7 +20,7 @@ jobs:
     outputs:
       architectures: ${{ steps.info.outputs.architectures }}
       matrix: ${{ steps.matrix.outputs.matrix }}
-      version: ${{ steps.info.outputs.version }}
+      version: ${{ steps.version.outputs.value }}
     steps:
       - uses: actions/checkout@v4
       - name: Read add-on metadata
@@ -28,6 +28,11 @@ jobs:
         uses: home-assistant/actions/helpers/info@master
         with:
           path: ./amp_runner
+      - name: Normalize JSON-encoded version
+        id: version
+        env:
+          RAW_VERSION: ${{ steps.info.outputs.version }}
+        run: echo "value=$(jq -r . <<< "$RAW_VERSION")" >> "$GITHUB_OUTPUT"
       - name: Prepare build matrix
         id: matrix
         uses: home-assistant/builder/actions/prepare-multi-arch-matrix@2026.09.0
