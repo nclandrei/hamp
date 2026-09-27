@@ -1,5 +1,5 @@
 name: Amp Runner
-version: "0.1.0"
+version: 0.1.0
 slug: amp_runner
 image: ghcr.io/nclandrei/ha-amp-runner
 description: >-
