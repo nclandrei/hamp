@@ -1,0 +1,46 @@
+#!/usr/bin/env bash
+# Call the Home Assistant REST API (or the Supervisor API) from inside the add-on.
+#
+#   ha GET  states
+#   ha GET  states/light.kitchen
+#   ha POST services/light/turn_on '{"entity_id":"light.kitchen","brightness_pct":40}'
+#   ha POST config/automation/config/washer_done @automation.json
+#   ha DELETE config/automation/config/washer_done
+#   ha GET  'history/period/2026-09-26T00:00:00+00:00?filter_entity_id=sensor.power&minimal_response'
+#   ha sup GET  supervisor/info          -> http://supervisor/supervisor/info
+#   ha sup POST core/restart
+#
+# Body: a JSON string, or @file to read it from a file. Output is the raw response body.
+# Exit status is non-zero on HTTP errors (the error body is still printed).
+set -euo pipefail
+
+base="http://supervisor/core/api"
+if [[ "${1:-}" == "sup" ]]; then
+    base="http://supervisor"
+    shift
+fi
+
+method="${1:-}"
+path="${2:-}"
+if [[ -z "${method}" || -z "${path}" ]]; then
+    sed -n '2,14p' "$0" >&2
+    exit 64
+fi
+shift 2
+
+: "${SUPERVISOR_TOKEN:?SUPERVISOR_TOKEN is not set; run this inside the Amp Runner add-on}"
+
+args=(
+    --silent --show-error --fail-with-body
+    --request "${method^^}"
+    --header "Authorization: Bearer ${SUPERVISOR_TOKEN}"
+    --header "Content-Type: application/json"
+)
+if [[ $# -gt 0 ]]; then
+    args+=(--data "$1")
+fi
+
+curl "${args[@]}" "${base}/${path#/}"
+status=$?
+echo
+exit "${status}"

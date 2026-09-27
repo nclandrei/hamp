@@ -1,0 +1,73 @@
+#!/usr/bin/env python3
+"""Send one command over the Home Assistant WebSocket API and print the result as JSON.
+
+    ha-ws '{"type":"config/entity_registry/list"}'
+    ha-ws '{"type":"config/area_registry/list"}'
+    ha-ws '{"type":"recorder/statistics_during_period","start_time":"2026-09-01T00:00:00+00:00",
+            "period":"day","statistic_ids":["sensor.grid_energy"],"types":["change"]}'
+    ha-ws --events 5 '{"type":"subscribe_events","event_type":"state_changed"}'
+
+The command may also be piped on stdin. --events N keeps the connection open and prints
+N event messages after the subscription is acknowledged.
+
+Exit status: 0 on success, 1 when Home Assistant reports success=false.
+"""
+
+import argparse
+import asyncio
+import json
+import os
+import sys
+
+import websockets
+
+URL = "ws://supervisor/core/websocket"
+
+
+async def main() -> int:
+    parser = argparse.ArgumentParser(add_help=False)
+    parser.add_argument("--events", type=int, default=0)
+    parser.add_argument("command", nargs="?")
+    opts = parser.parse_args()
+
+    raw = opts.command if opts.command is not None else sys.stdin.read()
+    if not raw.strip() or raw in ("-h", "--help"):
+        print(__doc__, file=sys.stderr)
+        return 64
+    message = json.loads(raw)
+    message.setdefault("id", 1)
+
+    token = os.environ.get("SUPERVISOR_TOKEN")
+    if not token:
+        print("SUPERVISOR_TOKEN is not set; run this inside the Amp Runner add-on", file=sys.stderr)
+        return 2
+
+    async with websockets.connect(URL, max_size=None) as ws:
+        await ws.recv()  # auth_required
+        await ws.send(json.dumps({"type": "auth", "access_token": token}))
+        auth = json.loads(await ws.recv())
+        if auth.get("type") != "auth_ok":
+            print(json.dumps(auth), file=sys.stderr)
+            return 2
+
+        await ws.send(json.dumps(message))
+        result = None
+        while result is None:
+            reply = json.loads(await ws.recv())
+            if reply.get("id") == message["id"]:
+                result = reply
+        print(json.dumps(result, indent=2))
+        if not result.get("success", True):
+            return 1
+
+        remaining = opts.events
+        while remaining > 0:
+            reply = json.loads(await ws.recv())
+            if reply.get("id") == message["id"]:
+                print(json.dumps(reply, indent=2))
+                remaining -= 1
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(asyncio.run(main()))

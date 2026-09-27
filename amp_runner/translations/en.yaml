@@ -1,0 +1,27 @@
+configuration:
+  amp_api_key:
+    name: Amp access token
+    description: >-
+      Access token from https://ampcode.com/settings/security (starts with sgamp_). The runner
+      uses it to sign in to your Amp account.
+  runner_id:
+    name: Runner name
+    description: >-
+      The name shown in the runner picker on ampcode.com and in the Amp apps. Must be a valid
+      hostname (letters, digits, hyphens).
+  remote_terminal:
+    name: Remote terminal
+    description: Allow opening a terminal into this runner from the thread view on ampcode.com.
+  amp_env:
+    name: Use Secrets & Env Vars from ampcode.com
+    description: >-
+      Inject the Secrets & Env Vars configured on ampcode.com into the threads this runner
+      serves (same as `amp --no-tui --amp-env`).
+  share_runner:
+    name: Share with workspace
+    description: >-
+      Let every member of your Amp workspace start threads on this machine. Threads run as
+      this add-on with full access to Home Assistant. Leave off unless you trust everyone.
+  log_level:
+    name: Log level
+    description: Verbosity of the add-on's own log output.

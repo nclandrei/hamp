@@ -1,0 +1,41 @@
+name: Amp Runner
+version: "0.1.0"
+slug: amp_runner
+description: >-
+  Runs an Amp runner on this Home Assistant machine so you can start threads from
+  ampcode.com or the Amp iOS/macOS apps and let the agent control Home Assistant.
+url: https://github.com/nclandrei/HAmp
+arch:
+  - aarch64
+  - amd64
+# Start after Home Assistant Core so the API is up when the first thread arrives.
+startup: application
+boot: auto
+# The base image ships s6-overlay v3, which provides /init itself.
+init: false
+# Full Home Assistant REST/WebSocket API via http://supervisor/core/api with SUPERVISOR_TOKEN.
+homeassistant_api: true
+# Supervisor API (add-ons, backups, core restart, host) via http://supervisor.
+hassio_api: true
+hassio_role: admin
+map:
+  - type: homeassistant_config
+    read_only: false
+  - type: share
+    read_only: false
+  - type: backup
+    read_only: false
+options:
+  amp_api_key: ""
+  runner_id: home-assistant
+  remote_terminal: true
+  amp_env: false
+  share_runner: false
+  log_level: info
+schema:
+  amp_api_key: password
+  runner_id: match(^[A-Za-z0-9]([A-Za-z0-9-]{0,61}[A-Za-z0-9])?$)
+  remote_terminal: bool
+  amp_env: bool
+  share_runner: bool
+  log_level: list(trace|debug|info|notice|warning|error|fatal)
